@@ -1,11 +1,16 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { FlatList, StyleSheet, View } from "react-native";
+
+// Screens
+import HomeScreen from "./src/screens/HomeScreen";
+import CoinDetailsScreen from "./src/screens/CoinDetailsScreen";
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      {/* <HomeScreen /> */}
+      <CoinDetailsScreen />
+      <StatusBar style="light" />
     </View>
   );
 }
@@ -13,8 +18,13 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#121212",
+    // alignItems: "center",
+    // justifyContent: "center",
+    paddingTop: 50,
+  },
+  centerAlignedRow: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
