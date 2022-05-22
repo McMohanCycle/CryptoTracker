@@ -1,5 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { FlatList, StyleSheet, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import Navigation from "./src/navigation";
 
 // Screens
 import HomeScreen from "./src/screens/HomeScreen";
@@ -7,11 +9,20 @@ import CoinDetailsScreen from "./src/screens/CoinDetailsScreen";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      {/* <HomeScreen /> */}
-      <CoinDetailsScreen />
-      <StatusBar style="light" />
-    </View>
+    <NavigationContainer
+      theme={{
+        colors: {
+          background: "#121212",
+        },
+      }}
+    >
+      <View style={styles.container}>
+        <Navigation />
+        {/* <HomeScreen /> */}
+        {/* <CoinDetailsScreen /> */}
+        <StatusBar style="light" />
+      </View>
+    </NavigationContainer>
   );
 }
 

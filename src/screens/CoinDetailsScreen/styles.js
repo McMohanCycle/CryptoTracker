@@ -22,6 +22,13 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
   },
+  input: {
+    backgroundColor: "white",
+    padding: 10,
+    // width: 100,
+    flex: 1,
+    marginHorizontal: 12,
+  },
 });
 
 export default styles;
