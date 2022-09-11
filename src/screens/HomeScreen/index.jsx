@@ -1,27 +1,50 @@
-import { FlatList} from 'react-native'
-import React from 'react';
+import { ActivityIndicator, FlatList, RefreshControl } from "react-native";
+import React, { useEffect, useState } from "react";
 
-import CoinItem from '../../components/CoinItem';
+// Components and packages
+import CoinItem from "../../components/CoinItem";
 
-import cryptocurrencies from '../../../assets/data/cryptocurruncies.json'
+// Data
+import { getCoinList } from "../../services/request";
 
 const HomeScreen = () => {
+  const [coins, setCoins] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchCoins = async (pageNumber) => {
+    if (isLoading) return;
+    setIsLoading(true);
+    const fetchedCoins = await getCoinList(pageNumber);
+    setCoins((existingCoins) => [...existingCoins, ...fetchedCoins]);
+    setIsLoading(false);
+  };
+
+  const refetchCoins = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    const fetchedCoins = await getCoinList();
+    setCoins(fetchedCoins);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCoins();
+  }, []);
+
   return (
     <FlatList
-        data={cryptocurrencies}
-        renderItem={({ item }) => (
-          <CoinItem
-            name={item.name}
-            symbol={item.symbol}
-            icon={item.image}
-            currentPrice={item.current_price}
-            rank={item.market_cap_rank}
-            priceChangePercent={item.market_cap_change_percentage_24h}
-            marketCap={item.market_cap}
-          />
-        )}
-      />
-  )
-}
+      data={coins}
+      renderItem={({ item }) => <CoinItem data={item} />}
+      onEndReached={() => fetchCoins(coins.length / 50 + 1)}
+      refreshControl={
+        <RefreshControl
+          refreshing={isLoading}
+          tintColor="white"
+          onRefresh={refetchCoins}
+        />
+      }
+    />
+  );
+};
 
-export default HomeScreen
+export default HomeScreen;

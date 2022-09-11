@@ -6,15 +6,14 @@ import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
 const CoinItem = (props) => {
-  const {
-    name,
-    symbol,
-    rank,
-    currentPrice,
-    icon,
-    priceChangePercent,
-    marketCap,
-  } = props;
+  const id = props.data.id,
+    name = props.data.name,
+    symbol = props.data.symbol,
+    icon = props.data.image,
+    currentPrice = props.data.current_price,
+    rank = props.data.market_cap_rank,
+    priceChangePercent = props.data.market_cap_change_percentage_24h,
+    marketCap = props.data.market_cap;
 
   const navigation = useNavigation();
 
@@ -40,7 +39,7 @@ const CoinItem = (props) => {
   return (
     <Pressable
       onPress={() => {
-        navigation.navigate("CoinDetails");
+        navigation.navigate("CoinDetails", { coinId: id });
       }}
     >
       <View style={styles.coinContainer}>
@@ -81,7 +80,7 @@ const CoinItem = (props) => {
         </View>
 
         <View style={{ alignItems: "flex-end" }}>
-          <Text style={styles.title}>${currentPrice}</Text>
+          <Text style={styles.title}>₹ {currentPrice}</Text>
           <Text style={[styles.subtitle, { marginRight: 0 }]}>
             MCap {normalizeMarketCap(marketCap)}
           </Text>

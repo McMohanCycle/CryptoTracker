@@ -2,10 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { FlatList, StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import Navigation from "./src/navigation";
-
-// Screens
-import HomeScreen from "./src/screens/HomeScreen";
-import CoinDetailsScreen from "./src/screens/CoinDetailsScreen";
+import WatchlistProvider from "./src/contexts/WatchlistContext";
 
 export default function App() {
   return (
@@ -16,12 +13,12 @@ export default function App() {
         },
       }}
     >
-      <View style={styles.container}>
-        <Navigation />
-        {/* <HomeScreen /> */}
-        {/* <CoinDetailsScreen /> */}
-        <StatusBar style="light" />
-      </View>
+      <WatchlistProvider>
+        <View style={styles.container}>
+          <Navigation />
+          <StatusBar style="light" />
+        </View>
+      </WatchlistProvider>
     </NavigationContainer>
   );
 }

@@ -1,6 +1,12 @@
 // Fundamental imports
-import { View, Text, Dimensions, TextInput } from "react-native";
-import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Dimensions,
+  TextInput,
+  ActivityIndicator,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 
 // Styles and components
 import { Ionicons, EvilIcons, AntDesign } from "@expo/vector-icons";
@@ -12,12 +18,47 @@ import {
   ChartPathProvider,
   ChartYLabel,
 } from "@rainbow-me/animated-charts";
+import { useRoute } from "@react-navigation/native";
 
 // Data
-import Coin from "../../../assets/data/crypto.json";
+import { getDetailedCoinData, getCoinChartData } from "../../services/request";
 
 const CoinDetailsScreen = () => {
-  console.log(ChartPathProvider);
+  // States
+  const [coin, setCoin] = useState(null);
+  const [coinChartData, setCoinChartData] = useState(null);
+  const [coinValue, setCoinValue] = useState("1");
+  const [usdValue, setUSDValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const route = useRoute();
+  const {
+    params: { coinId },
+  } = route;
+
+  // Fetches coin's data from request.js
+  const fetchCoinData = async () => {
+    setIsLoading(true);
+    const fetchedCoinData = await getDetailedCoinData(coinId);
+    const fetchedCoinChartData = await getCoinChartData(coinId, 1);
+    console.log(
+      "fetchedCoinData.name: ",
+      fetchedCoinData.symbol,
+      "\n\nfetchedCoinChartData.prices: ",
+      fetchedCoinChartData.prices[0]
+    );
+    setCoin(fetchedCoinData);
+    setCoinChartData(fetchedCoinChartData);
+    setUSDValue(`${fetchedCoinData.market_data.current_price.inr}`);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCoinData();
+  }, []);
+
+  if (isLoading || !coin || !coinChartData)
+    return <ActivityIndicator size="small" />;
+
   const {
     name,
     symbol,
@@ -28,23 +69,20 @@ const CoinDetailsScreen = () => {
       current_price,
       price_change_percentage_24h,
     },
-    prices,
-  } = Coin;
-
-  const [coinValue, setCoinValue] = useState("1");
-  const [usdValue, setUSDValue] = useState(`${current_price.usd}`);
+  } = coin;
+  const { prices } = coinChartData;
 
   const convertCurrency = (value, type) => {
     switch (type) {
       case 0:
-        console.log("BTC TextInput/Value: " + value);
+        console.log(coinId, " TextInput/Value: " + value);
         setCoinValue(value);
-        setUSDValue((value * current_price.usd).toFixed(3));
+        setUSDValue((value * current_price.inr).toFixed(3));
         break;
       case 1:
-        console.log("US$ TextInput/Value: " + value);
+        console.log("IN₹ TextInput/Value: " + value);
         setUSDValue(value);
-        setCoinValue((value / current_price.usd).toFixed(3));
+        setCoinValue((value / current_price.inr).toFixed(3));
         break;
     }
   };
@@ -59,14 +97,14 @@ const CoinDetailsScreen = () => {
 
   const screenWidth = Dimensions.get("window").width;
 
-  const chartColor = current_price.usd > prices[0][1] ? "#16C784" : "#EA3943";
+  const chartColor = current_price.inr > prices[0][1] ? "#16C784" : "#EA3943";
 
   const formatCurrency = (value) => {
     "worklet";
     if (value === "") {
-      return `${current_price.usd.toFixed(2)} US$`;
+      return `${current_price.inr.toFixed(2)} IN₹`;
     }
-    return `${parseFloat(value).toFixed(2)} US$`;
+    return `${parseFloat(value).toFixed(2)} IN₹`;
   };
 
   return (
@@ -78,6 +116,7 @@ const CoinDetailsScreen = () => {
         }}
       >
         <CoinDetailsHeader
+          coinId={coinId}
           symbol={symbol}
           image={small}
           market_cap_rank={market_cap_rank}
@@ -148,7 +187,7 @@ const CoinDetailsScreen = () => {
             />
           </View>
           <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
-            <Text style={{ color: "white" }}>US$</Text>
+            <Text style={{ color: "white" }}>IN₹</Text>
             <TextInput
               style={styles.input}
               keyboardType="numeric"
